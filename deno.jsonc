@@ -1,0 +1,5 @@
+{
+    "tasks": {
+        "coverage": "rm -r dev/coverage/ && deno test --coverage=dev/coverage/ && deno coverage dev/coverage/ --lcov --output=dev/coverage/lcov.info"
+    }
+}
