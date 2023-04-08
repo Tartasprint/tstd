@@ -1,6 +1,6 @@
 type Data<T> = { valid: true; value: T } | { valid: false; value: undefined };
 
-class Optional<T> {
+export class Optional<T> {
   #data: Data<T>;
 
   private constructor(valid: boolean, value: T | undefined) {
