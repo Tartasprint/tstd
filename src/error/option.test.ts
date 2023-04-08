@@ -3,7 +3,7 @@ import {
   assertEquals,
   assertFalse,
   assertThrows,
-} from "https://deno.land/std@0.181.0/testing/asserts.ts";
+} from "deno_testing";
 import { None, Some } from "./option.ts";
 
 Deno.test("Some(undefined)", () => {
