@@ -63,12 +63,17 @@ export class Optional<T> {
     return this.#data.valid && this.#data.value === v;
   }
 
-  is_some_matching(f: (v: T) => boolean): boolean{
-    return this.#data.valid && f(this.#data.value)
+  is_some_matching(f: (v: T) => boolean): boolean {
+    return this.#data.valid && f(this.#data.value);
   }
 
   is_none(): boolean {
     return !this.#data.valid;
+  }
+
+  static from_undefined<T>(v: T | undefined): Optional<T> {
+    if (v === undefined) return Optional.None();
+    else return Optional.Some(v);
   }
 }
 

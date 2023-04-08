@@ -1,5 +1,5 @@
 import { assert, assertEquals, assertFalse, assertThrows } from "deno_testing";
-import { None, Some } from "./option.ts";
+import { None, Some, Optional } from "./option.ts";
 
 Deno.test("Some(undefined)", () => {
   assertFalse(Some(undefined).is_none());
@@ -108,4 +108,20 @@ Deno.test("map Some(A) => Some(B)", () => {
 
 Deno.test("map None => None", () => {
   assert(None().map((_) => "One").is_none());
+});
+
+Deno.test("from_undefined undefined", () => {
+  assert(Optional.from_undefined(undefined).is_none());
+});
+
+
+Deno.test("from_undefined val", () => {
+  assert(Optional.from_undefined(32).is_some_with(32));
+});
+
+Deno.test("from_undefined falsy vals", () => {
+  // Ensure only undefined is mapped to None()
+  [0,false,null].forEach(falsy => {
+    assert(Optional.from_undefined(falsy).is_some_with(falsy));
+  });
 });
