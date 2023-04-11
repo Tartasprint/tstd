@@ -125,3 +125,16 @@ Deno.test("from_undefined falsy vals", () => {
     assert(Optional.from_undefined(falsy).is_some_with(falsy));
   });
 });
+
+Deno.test("flatten SomeSome", () => {
+  assert(Some(Some(2)).flatten().is_some_with(2))
+});
+
+Deno.test("flatten SomeNone", () => {
+  assert(Some(None()).flatten().is_none())
+});
+
+
+Deno.test("flatten None", () => {
+  assert(None<Optional<boolean>>().flatten().is_none())
+});

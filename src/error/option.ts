@@ -75,6 +75,11 @@ export class Optional<T> {
     if (v === undefined) return Optional.None();
     else return Optional.Some(v);
   }
+
+  flatten<U>(this: Optional<Optional<U>>):Optional<U>{
+    if(!this.#data.valid) return None()
+    else return this.#data.value
+  }
 }
 
 export const Some = Optional.Some;
