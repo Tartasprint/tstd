@@ -1,5 +1,6 @@
-import { assertEquals } from "https://deno.land/std@0.181.0/testing/asserts.ts";
+import { assert, assertEquals } from "deno_testing";
 import { Iterateur } from "./iter.ts";
+import { None, Some } from "/error/option.ts";
 
 Deno.test("Every: true", () => {
   const a = [true, true];
@@ -126,15 +127,45 @@ Deno.test("bigsum some", () => {
 });
 
 Deno.test("concat empty", () => {
-    assertEquals(
-      Iterateur.from([].values()).concat(),
-      "",
-    );
-  });
-  
-  Deno.test("concat some", () => {
-    assertEquals(
-      Iterateur.from(["a","b","c","d"].values()).concat(),
-      "abcd",
-    );
-  });
+  assertEquals(
+    Iterateur.from([].values()).concat(),
+    "",
+  );
+});
+
+Deno.test("concat some", () => {
+  assertEquals(
+    Iterateur.from(["a", "b", "c", "d"].values()).concat(),
+    "abcd",
+  );
+});
+
+Deno.test("first empty", () => {
+  assert(Iterateur.from([].values()).first().is_none());
+});
+
+Deno.test("first not empty", () => {
+  assert(Iterateur.from([1, 2, 3].values()).first().is_some_with(1));
+});
+
+Deno.test("first_matching empty", () => {
+  assert(
+    Iterateur.from([].values()).first_matching((v) => Some(v)).is_none(),
+  );
+});
+
+Deno.test("first_matching not empty, none matching", () => {
+  assert(
+    Iterateur.from([0, 1, 2, 3].values()).first_matching((v) =>
+      v < 0 ? Some(v) : None()
+    ).is_none(),
+  );
+});
+
+Deno.test("first_matching not empty, some matching", () => {
+  assert(
+    Iterateur.from([0, -1, 2, -3].values()).first_matching((v) =>
+      v < 0 ? Some(v) : None()
+    ).is_some_with(-1),
+  );
+});
