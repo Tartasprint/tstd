@@ -99,6 +99,10 @@ export abstract class Iterateur<TYield> {
     return this.reduce((acc, v) => acc + v, "");
   }
 
+  /**
+   * Returns the first available item in the iterator, if any.
+   * @returns the first item
+   */
   first(): Optional<TYield> {
     const r = this.next();
     if (r.done) return None();
@@ -122,6 +126,12 @@ export abstract class Iterateur<TYield> {
     return match;
   }
 
+  /**
+   * Reduces an iterator to a value by updating item by item an accumulator.
+   * @param red The reducer
+   * @param acc The accumulator
+   * @returns The last accumulator
+   */
   reduce<Acc>(
     red: (acc: Acc, v: TYield) => Acc,
     acc: Acc,
@@ -133,6 +143,12 @@ export abstract class Iterateur<TYield> {
     return acc;
   }
 
+  /**
+   * Reduces an iterator to a value by modifying item by item an accumulator.
+   * @param red The reducer
+   * @param acc The accumulator
+   * @returns The last accumulator
+   */
   reduce_mod<Acc>(
     red: (acc: Acc, v: TYield) => void,
     acc: Acc,
@@ -144,17 +160,30 @@ export abstract class Iterateur<TYield> {
     return acc;
   }
 
+  /**
+   * Allows to enrich JS iterators into Iterateur.
+   * @param iter Some JS iterable to be enriched
+   * @returns The enriched version of the iterator
+   */
   // deno-lint-ignore no-explicit-any
   static from<TY>(iter: Iterator<TY, any, undefined>): Iterateur<TY> {
     return new FromIterator(iter);
   }
 
+  /**
+   * Collects the items of an iterator into an Array.
+   * @returns The collected items
+   */
   collect(): Array<TYield> {
     return this.reduce_mod((acc, v) => {
       acc.push(v);
     }, [] as TYield[]);
   }
 
+  /**
+   * Returns an enumeration of the iterator: 0,i(0);1,i(1);...
+   * @returns Iterator of index,value
+   */
   enumerate(): Iterateur<[number, TYield]> {
     return this.map_stateful((i, s) => {
       return { out: [s, i], state: s + 1 };
