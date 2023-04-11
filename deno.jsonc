@@ -1,6 +1,6 @@
 {
     "imports": {
-        "/": "./",
+        "/": "./src/",
         "./": "./",
         "deno_testing": "https://deno.land/std@0.181.0/testing/asserts.ts"
     },
