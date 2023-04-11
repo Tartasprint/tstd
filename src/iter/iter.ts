@@ -23,6 +23,22 @@ export abstract class Iterateur<TYield> {
   }
 
   /**
+   * Maps every yielded element to a new value given by the mapping, keeping
+   * record of a state.
+   * @param mapping The mapping to transform the yielded elements of the iterator.
+   * The output is an object with properties `out` for the desired output value and `state`
+   * for the new state.
+   * @param state The initial state
+   * @returns A new iterator yielding the mapped values.
+   */
+  map_stateful<TState, TYieldOut>(
+    map: (input: TYield, state: TState) => { out: TYieldOut; state: TState },
+    state: TState,
+  ): Iterateur<TYieldOut> {
+    return new MapStateful(this, map, state);
+  }
+
+  /**
    * Filters the yielded elements `e` that verify `filter(e)===true`.
    * @param filter The filter to be applied
    * @returns A new iterator yielding only the filtered values.
@@ -138,9 +154,15 @@ export abstract class Iterateur<TYield> {
       acc.push(v);
     }, [] as TYield[]);
   }
+
+  enumerate(): Iterateur<[number, TYield]> {
+    return this.map_stateful((i, s) => {
+      return { out: [s, i], state: s + 1 };
+    }, 0);
+  }
 }
 
-class Map<TIn, TYieldIn, TYieldOut> extends Iterateur<TYieldOut> {
+class Map<TYieldIn, TYieldOut> extends Iterateur<TYieldOut> {
   #map_map: (input: TYieldIn) => TYieldOut;
   #map_iter: Iterateur<TYieldIn>;
   constructor(
@@ -161,6 +183,35 @@ class Map<TIn, TYieldIn, TYieldOut> extends Iterateur<TYieldOut> {
   }
 }
 
+class MapStateful<TYieldIn, TYieldOut, TState> extends Iterateur<TYieldOut> {
+  #map_map: (
+    input: TYieldIn,
+    state: TState,
+  ) => { out: TYieldOut; state: TState };
+  #map_iter: Iterateur<TYieldIn>;
+  #state: TState;
+  constructor(
+    iter: Iterateur<TYieldIn>,
+    map: (input: TYieldIn, state: TState) => { out: TYieldOut; state: TState },
+    state: TState,
+  ) {
+    super();
+    this.#map_map = map;
+    this.#map_iter = iter;
+    this.#state = state;
+  }
+
+  next(): IterateurResult<TYieldOut> {
+    const result = this.#map_iter.next();
+    if (result.done === true) return result;
+    else {
+      const { out, state } = this.#map_map(result.value, this.#state);
+      this.#state = state;
+      return { done: false, value: out };
+    }
+  }
+}
+
 class Filter<TYield> extends Iterateur<TYield> {
   #filter_filter: (v: TYield) => boolean;
   #filter_iter: Iterateur<TYield>;
@@ -174,7 +225,7 @@ class Filter<TYield> extends Iterateur<TYield> {
     this.#filter_filter = filter;
   }
 
-  next(_input?: undefined): IterateurResult<TYield> {
+  next(): IterateurResult<TYield> {
     for (
       let result = this.#filter_iter.next();
       !result.done;

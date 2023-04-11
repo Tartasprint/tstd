@@ -169,3 +169,10 @@ Deno.test("first_matching not empty, some matching", () => {
     ).is_some_with(-1),
   );
 });
+
+Deno.test("enumerate", () => {
+  assertEquals(
+    Iterateur.from([0, -1, 2, -3].values()).enumerate().collect(),
+    [[0,0],[1,-1],[2,2],[3,-3]]
+  );
+});
