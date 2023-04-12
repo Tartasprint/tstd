@@ -1,4 +1,4 @@
-import { None, Optional, Some } from "/error/option.ts";
+import { None, Optional, Some } from "../error/option.ts";
 
 /**
  * The result of an iteration in an iterator.
