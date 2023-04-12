@@ -97,7 +97,7 @@ class ProvidingArray<Value> extends ExtensibleVProvider<number, Value> {
   }
 
   add_v(val: Value): Optional<number> {
-    return Some(this.#a.push(val));
+    return Some(this.#a.push(val) - 1);
   }
 }
 

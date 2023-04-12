@@ -44,3 +44,27 @@ Deno.test("Providing array, key unavailable", () => {
       .is_none(),
   );
 });
+
+Deno.test("add_v array", () => {
+  const a = Provider.from(["GO"]);
+  assert(
+    a.is_v_extensible(),
+    "Since a is an Array, we expect to be able to add a new value to the provider.",
+  );
+  assert(a.provide(0).is_some_with("GO"), 'a[0]==="GO"');
+  assert(a.provide(1).is_none(), "a.length===1");
+  assert(a.add_v("GA").is_some_with(1), "a[1]=GA");
+  assert(a.provide(1).is_some_with("GA"));
+});
+
+Deno.test("add_kv map", () => {
+  const a = Provider.from(new Map([["Sheep","Hector"]]));
+  assert(
+    a.is_kv_extensible(),
+    "Since a is a Map, we expect to be able to add a new key/value to the provider.",
+  );
+  assert(a.provide("Sheep").is_some_with("Hector"), 'a: "Sheep" -> "Hector"');
+  assert(a.provide("Goat").is_none(), "a: Goat not defined yet");
+  assert(a.add_kv("Goat", "Gwen"), "a[1]=GA");
+  assert(a.provide("Goat").is_some_with("Gwen"));
+});
